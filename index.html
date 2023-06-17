@@ -7,7 +7,9 @@
 	<title>Quản lý nhân viên</title>
 
 	<!-- Font Awesome -->
-	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+		integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw=="
+		crossorigin="anonymous" referrerpolicy="no-referrer" />
 
 	<!-- Bootstrap 4 -->
 	<link rel="stylesheet" href="css/bootstrap.min.css">
@@ -125,7 +127,10 @@
 							<div class="col">
 								<div class="input-group">
 									<input type="text" class="form-control" placeholder="Loại nhân viên" id="searchName">
-									<div class="input-group-prepend">
+									<div class="input-group-prepend filter-employee">
+										<span class="input-group-text" id="btnClearFilter"><i class="fa-solid fa-filter-circle-xmark"></i></span>
+									</div>
+									<div class="input-group-prepend filter-employee">
 										<span class="input-group-text" id="btnTimNV"><i class="fa fa-search"></i></span>
 									</div>
 								</div>
@@ -194,7 +199,7 @@
 								<div class="input-group-prepend">
 									<span class="input-group-text"><i class="fa fa-user"></i></span>
 								</div>
-								<input type="text" name="tk" id="tknv" class="form-control input-sm"
+								<input type="text" name="account" id="tknv" class="form-control input-sm"
 									placeholder="Tài khoản">
 							</div>
 
@@ -240,7 +245,7 @@
 								<div class="input-group-prepend">
 									<span class="input-group-text"><i class="fa fa-calendar"></i></span>
 								</div>
-								<input type="text" name="ngaylam" id="datepicker" class="form-control"
+								<input type="text" name="date" id="datepicker" class="form-control"
 									placeholder="Ngày làm">
 							</div>
 
@@ -250,9 +255,9 @@
 						<div class="form-group">
 							<div class="input-group">
 								<div class="input-group-prepend">
-									<span class="input-group-text"><i class="fa fa-money" aria-hidden="true"></i></span>
+									<span class="input-group-text"><i class="fa-solid fa-money-check-dollar"></i></span>
 								</div>
-								<input type="text" name="luongCB" id="luongCB" class="form-control input-sm"
+								<input type="text" name="salary" id="luongCB" class="form-control input-sm"
 									placeholder="Lương cơ bản">
 							</div>
 							<span class="sp-thongbao" id="tbLuongCB"></span>
@@ -262,9 +267,9 @@
 								<div class="input-group-prepend">
 									<span class="input-group-text"><i class="fa fa-briefcase"></i></span>
 								</div>
-								<select class="form-control" id="chucvu">
-									<option>Chọn chức vụ</option>
-									<option>Sếp</option>
+								<select class="form-control" id="chucvu" name="position">
+									<option disabled selected value="non-selected">Chọn chức vụ</option>
+									<option>Giám đốc</option>
 									<option>Trưởng phòng</option>
 									<option>Nhân viên</option>
 								</select>
@@ -275,24 +280,20 @@
 						<div class="form-group">
 							<div class="input-group">
 								<div class="input-group-prepend">
-									<span class="input-group-text"><i class="fa fa-clock-o" aria-hidden="true"></i></span>
+									<span class="input-group-text"><i class="fa-solid fa-clock"></i></span>
 								</div>
-								<input type="text" name="gioLam" id="gioLam" class="form-control input-sm"
+								<input type="text" name="time" id="gioLam" class="form-control input-sm"
 									placeholder="Giờ làm">
 							</div>
 							<span class="sp-thongbao" id="tbGiolam"></span>
 						</div>
-
+						<div class="modal-footer" id="modal-footer">
+							<button id="btnThemNV" class="btn btn-success">Thêm người dùng</button>
+							<button id="btnCapNhat" class="btn btn-success">Cập nhật</button>
+							<button id="btnDong" class="btn btn-danger" data-dismiss="modal">Đóng</button>
+						</div>
 					</form>
 				</div>
-
-				<!-- Modal footer -->
-				<div class="modal-footer" id="modal-footer">
-					<button id="btnThemNV" type="button" class="btn btn-success">Thêm người dùng</button>
-					<button id="btnCapNhat" type="button" class="btn btn-success">Cập nhật</button>
-					<button id="btnDong" type="button" class="btn btn-danger" data-dismiss="modal">Đóng</button>
-				</div>
-
 			</div>
 		</div>
 	</div>

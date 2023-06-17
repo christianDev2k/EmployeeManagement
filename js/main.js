@@ -1,4 +1,5 @@
-// CONSTANT
+// ======================== CONSTANT ==============================
+
 const EMPLOYEE_STORAGE_KEY = 'employee_list';
 
 const _$ = document.querySelector.bind(document);
@@ -12,16 +13,24 @@ const dateInput = _$('#datepicker');
 const salaryInput = _$('#luongCB');
 const positionInput = _$('#chucvu');
 const timeInput = _$('#gioLam');
-const filterValue = _$('#searchValue');
+const filterInput = _$('#searchName');
 const modalForm = _$('#modal-form');
 const openModalAddButton = _$('#btnThem');
 const updateButton = _$('#btnCapNhat');
 const addButton = _$('#btnThemNV');
 
 const employeeList = new EmployeesList();
+const regex = {
+    id: /^[a-zA-Z\d]{4,6}$/,
+    name: /^[a-zA-Z\sÀ-ỹ]+$/,
+    email: /^([a-z0-9\+_\-]+)(\.[a-z0-9\+_\-]+)*@([a-z0-9\-]+\.)+[a-z]{2,6}$/,
+    pw: /^(?=.*\d)(?=.*[A-Z])(?=.*[\W_]).{6,10}$/,
+    date: /^(0[1-9]|1[0-2])\/(0[1-9]|1\d|2\d|3[0-1])\/\d{4}$/,
+    salary: /^[0-9]+$/,
+    time: /^[0-9]+$/,
+};
 
 let editIndex = -1;
-let newEmployee;
 
 // =============== LOCAL STORAGE ================
 
@@ -30,65 +39,121 @@ function setStorage(arr) {
 }
 
 function getStorage() {
-    const backupEmployee = localStorage.getItem(EMPLOYEE_STORAGE_KEY)
-        ? JSON.parse(localStorage.getItem(EMPLOYEE_STORAGE_KEY))
-        : [];
+    if (localStorage.getItem(EMPLOYEE_STORAGE_KEY)) {
+        const backupEmployee = JSON.parse(localStorage.getItem(EMPLOYEE_STORAGE_KEY));
+        const arrEmployee = backupEmployee.map(
+            (employeeObj) =>
+                (newEmployee = new employee(
+                    employeeObj.id,
+                    employeeObj.name,
+                    employeeObj.email,
+                    employeeObj.pw,
+                    employeeObj.date,
+                    employeeObj.salary,
+                    employeeObj.position,
+                    employeeObj.time
+                ))
+        );
 
-    const arrEmployee = backupEmployee.map(
-        (employeeObj) =>
-            (newEmployee = new employee(
-                employeeObj.id,
-                employeeObj.name,
-                employeeObj.email,
-                employeeObj.pw,
-                employeeObj.date,
-                employeeObj.salary,
-                employeeObj.position,
-                employeeObj.time
-            ))
-    );
-
-    employeeList.list = arrEmployee;
-    app.renderEmployee();
+        employeeList.list = arrEmployee;
+        app.renderEmployee();
+    } else employeeList.list = [];
 }
 
-// =================================================================
+// ======================= MAIN SECTION ===========================
 
 const app = {
     // Handle Events
     handleEvent() {
+        const _this = this;
+
         // Ẩn nút cập nhật
         openModalAddButton.onclick = () => {
+            editIndex = -1;
+            // _this.resetForm(); ========================
+
             updateButton.style.display = 'none';
             addButton.style.display = 'block';
-        }
+        };
 
         // Validator ==> Add / Edit
-        Validator({
+        Validators({
             form: '#modal-form',
             rules: [
-                Validator.isAccount('#tknv'),
-            ]
-        })
+                Validators.isAccount('#tknv', employeeList),
+                Validators.isName('#name'),
+                Validators.isEmail('#email'),
+                Validators.isPassword('#password'),
+                Validators.isDay('#datepicker'),
+                Validators.isSalary('#luongCB'),
+                Validators.isPosition('#chucvu'),
+                Validators.isTime('#gioLam'),
+            ],
+            onSubmit(data) {
+                _this.handleEmployee(data);
+            },
+        });
+
+        // Sự kiện xóa và hiện bảng chỉnh sửa nhân viên
+        _$('#tableDanhSach').onclick = (e) => {
+            if (e.target.dataset.id) {
+                e.target.innerText === 'Xóa' ? _this.handleDeleteEmployee(e) : _this.getEmployee(e);
+            }
+        };
+
+        // Sự kiện lọc nhân viên
+        _$('#btnTimNV').onclick = () => {
+            _this.handleFilterEmployee();
+        };
+
+        filterInput.oninput = function () {
+            this.classList.remove('invalid');
+        };
+
+        _$('#btnClearFilter').onclick = () => {
+            _this.renderEmployee();
+        };
     },
 
-    // Xóa nhân viên
+    // Handle process data
+    handleEmployee(data) {
+        let newEmployee = new employee(
+            data.account,
+            data.name,
+            data.email,
+            data.password,
+            data.date,
+            data.salary,
+            data.position,
+            data.time
+        );
+        editIndex === -1 ? this.addEmployee(newEmployee) : this.handleEditEmployee(newEmployee);
+    },
+
+    // Add a new employee
+    addEmployee(newEmployee) {
+        employeeList.addEmployeeMethod(newEmployee);
+        setStorage(employeeList.list);
+        this.renderEmployee();
+    },
+
+    // Delete a employee
     handleDeleteEmployee(e) {
         const employeeItemID = e.target.dataset.id;
         const employeeItem = _$('#' + employeeItemID);
         const id = employeeItem.querySelector('td:nth-child(1)').innerText;
 
-        // Xóa giao diện
+        // Remove the employee in HTML
         employeeItem.remove();
 
-        // Xóa mảng
+        // Delete the employee list
         employeeList.deleteEmployee(id);
 
         // Update local
         setStorage(employeeList.list);
     },
 
-    // Put thông tin nhân viên lên ô value
+    // Get imformation to input element
     getEmployee(e) {
         const employeeItemID = e.target.dataset.id;
         const employeeItem = _$('#' + employeeItemID);
@@ -96,6 +161,7 @@ const app = {
 
         updateButton.style.display = 'block';
         addButton.style.display = 'none';
+        this.resetForm();
 
         editIndex =
             employeeList.findIndexMethod(id) !== -1
@@ -112,22 +178,22 @@ const app = {
         timeInput.value = employeeList.list[editIndex].time;
     },
 
-    // Chỉnh sửa thông tin nhân viên
+    // Edit the employee
     handleEditEmployee(updatedEmployee) {
         employeeList.editEmployee(updatedEmployee, editIndex);
         setStorage(employeeList.list);
         this.renderEmployee();
     },
 
-    // Tìm nhân viên
+    // Filter employee
     handleFilterEmployee() {
-        const filteredEmployee = employeeList.searchEmployee(filterValue.value);
+        const filtered = employeeList.searchEmployee(filterInput.value);
 
-        if (filteredEmployee.length) {
-            _$('#searchValue').classList.remove('invalid');
-            this.renderEmployee(filteredEmployee);
+        if (filtered.length) {
+            _$('#searchName').classList.remove('invalid');
+            this.renderEmployee(filtered);
         } else {
-            _$('#searchValue').classList.add('invalid');
+            _$('#searchName').classList.add('invalid');
         }
     },
 
@@ -152,6 +218,18 @@ const app = {
             `;
         });
         _$('#tableDanhSach').innerHTML = html.join('');
+    },
+
+    // Reset form
+    resetForm() {
+        const inputNodeList = _$$('#modal-form .form-control');
+
+        inputNodeList.forEach((inputNode) => {
+            inputNode.classList.remove('invalid');
+            inputNode.parentElement.nextElementSibling.innerText = '';
+
+            modalForm.reset();
+        });
     },
 
     // ========================== START =================================

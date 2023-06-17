@@ -22,7 +22,7 @@
 
 /* ========================================== */
 
-#searchValue.invalid,
+#searchName.invalid,
 #modal-form .form-control.invalid {
   border-color: red;
   background-color: rgba(255, 0, 0, 0.1);
@@ -36,8 +36,13 @@
 
 .form-group {
   margin-bottom: 0;
+  margin-top: 4px;
 }
 
 .modal-footer {
   padding-right: 0;
+}
+
+.filter-employee {
+  cursor: pointer;
 }
