@@ -3,6 +3,8 @@ class EmployeesList {
         this.list = [];
     }
 
+
+    // Tìm index
     findIndexMethod(id) {
         let indexItem = -1;
         this.list.forEach((employee, index) => {

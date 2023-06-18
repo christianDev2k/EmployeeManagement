@@ -18,6 +18,7 @@ const modalForm = _$('#modal-form');
 const openModalAddButton = _$('#btnThem');
 const updateButton = _$('#btnCapNhat');
 const addButton = _$('#btnThemNV');
+const showStatus = _$('.notice-status');
 
 const employeeList = new EmployeesList();
 const regex = {
@@ -70,7 +71,7 @@ const app = {
         // Ẩn nút cập nhật
         openModalAddButton.onclick = () => {
             editIndex = -1;
-            // _this.resetForm(); ========================
+            _this.resetForm();
 
             updateButton.style.display = 'none';
             addButton.style.display = 'block';
@@ -94,14 +95,14 @@ const app = {
             },
         });
 
-        // Sự kiện xóa và hiện bảng chỉnh sửa nhân viên
+        // "Xóa" / "Chỉnh sửa" button
         _$('#tableDanhSach').onclick = (e) => {
             if (e.target.dataset.id) {
                 e.target.innerText === 'Xóa' ? _this.handleDeleteEmployee(e) : _this.getEmployee(e);
             }
         };
 
-        // Sự kiện lọc nhân viên
+        // Search
         _$('#btnTimNV').onclick = () => {
             _this.handleFilterEmployee();
         };
@@ -135,6 +136,7 @@ const app = {
         employeeList.addEmployeeMethod(newEmployee);
         setStorage(employeeList.list);
         this.renderEmployee();
+        this.showStatus('Added successful!');
     },
 
     // Delete a employee
@@ -151,6 +153,8 @@ const app = {
 
         // Update local
         setStorage(employeeList.list);
+
+        this.showStatus('Delete successful!', 'delete');
     },
 
     // Get imformation to input element
@@ -183,6 +187,7 @@ const app = {
         employeeList.editEmployee(updatedEmployee, editIndex);
         setStorage(employeeList.list);
         this.renderEmployee();
+        this.showStatus('Edit successful!');
     },
 
     // Filter employee
@@ -230,6 +235,17 @@ const app = {
 
             modalForm.reset();
         });
+    },
+
+    // Show status
+    showStatus(message, status = 'success') {
+        showStatus.classList.add('show');
+        showStatus.innerHTML = message;
+        showStatus.style.backgroundColor = status === 'success' ? 'rgba(0, 128, 0, 0.9)' : '#ff0000';
+
+        setTimeout(() => {
+            showStatus.classList.remove('show');
+        }, 2000);
     },
 
     // ========================== START =================================
