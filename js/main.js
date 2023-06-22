@@ -42,18 +42,10 @@ function setStorage(arr) {
 function getStorage() {
     if (localStorage.getItem(EMPLOYEE_STORAGE_KEY)) {
         const backupEmployee = JSON.parse(localStorage.getItem(EMPLOYEE_STORAGE_KEY));
+
         const arrEmployee = backupEmployee.map(
-            (employeeObj) =>
-                (newEmployee = new employee(
-                    employeeObj.id,
-                    employeeObj.name,
-                    employeeObj.email,
-                    employeeObj.pw,
-                    employeeObj.date,
-                    employeeObj.salary,
-                    employeeObj.position,
-                    employeeObj.time
-                ))
+            ({ id, name, email, pw, date, salary, position, time }) =>
+                (newEmployee = new employee(id, name, email, pw, date, salary, position, time))
         );
 
         employeeList.list = arrEmployee;
@@ -66,12 +58,10 @@ function getStorage() {
 const app = {
     // Handle Events
     handleEvent() {
-        const _this = this;
-
         // Ẩn nút cập nhật
         openModalAddButton.onclick = () => {
             editIndex = -1;
-            _this.resetForm();
+            this.resetForm();
 
             updateButton.style.display = 'none';
             addButton.style.display = 'block';
@@ -91,43 +81,34 @@ const app = {
                 Validators.isTime('#gioLam'),
             ],
             onSubmit(data) {
-                _this.handleEmployee(data);
+                app.handleEmployee(data);
             },
         });
 
         // "Xóa" / "Chỉnh sửa" button
         _$('#tableDanhSach').onclick = (e) => {
             if (e.target.dataset.id) {
-                e.target.innerText === 'Xóa' ? _this.handleDeleteEmployee(e) : _this.getEmployee(e);
+                e.target.innerText === 'Xóa' ? this.handleDeleteEmployee(e) : this.getEmployee(e);
             }
         };
 
         // Search
         _$('#btnTimNV').onclick = () => {
-            _this.handleFilterEmployee();
+            this.handleFilterEmployee();
         };
 
-        filterInput.oninput = function () {
-            this.classList.remove('invalid');
+        filterInput.oninput = () => {
+            filterInput.classList.remove('invalid');
         };
 
         _$('#btnClearFilter').onclick = () => {
-            _this.renderEmployee();
+            this.renderEmployee();
         };
     },
 
     // Handle process data
-    handleEmployee(data) {
-        let newEmployee = new employee(
-            data.account,
-            data.name,
-            data.email,
-            data.password,
-            data.date,
-            data.salary,
-            data.position,
-            data.time
-        );
+    handleEmployee({ account, name, email, password, date, salary, position, time }) {
+        let newEmployee = new employee(account, name, email, password, date, salary, position, time);
         editIndex === -1 ? this.addEmployee(newEmployee) : this.handleEditEmployee(newEmployee);
     },
 
