@@ -171,7 +171,7 @@ const app = {
         this.renderEmployee();
         this.resetForm();
         this.showStatus('Edit successful!');
-    }
+    },
 
     // Filter employee
     handleFilterEmployee() {
