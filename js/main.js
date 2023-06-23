@@ -117,6 +117,7 @@ const app = {
         employeeList.addEmployeeMethod(newEmployee);
         setStorage(employeeList.list);
         this.renderEmployee();
+        this.resetForm();
         this.showStatus('Added successful!');
     },
 
@@ -168,8 +169,9 @@ const app = {
         employeeList.editEmployee(updatedEmployee, editIndex);
         setStorage(employeeList.list);
         this.renderEmployee();
+        this.resetForm();
         this.showStatus('Edit successful!');
-    },
+    }
 
     // Filter employee
     handleFilterEmployee() {
